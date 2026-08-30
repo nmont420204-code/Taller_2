@@ -1,5 +1,5 @@
 import java.util.Scanner;
-
+import java.util.List;
 public class Main {
 
     static Scanner leer = new Scanner(System.in);
@@ -10,7 +10,7 @@ public class Main {
             do {
                 mostrarMenu();
                 opcion = leerEntero("Seleccione una opcion: ");
-                
+
                 switch (opcion) {
                     case 1:
                         registrarLector();
@@ -61,19 +61,73 @@ public class Main {
         }
     }
 
-    static void registrarLector() { 
+    static void registrarLector() {
+        try {
+            System.out.println("----Registrar Lectores---");
+            System.out.print("Ingrese su nombre: ");
+            String nombre = leer.nextLine();
+
+            System.out.print("Ingrese su apellido: ");
+            String apellido = leer.nextLine();
+
+            System.out.print("Ingrese su teléfono: ");
+            String telefono = leer.nextLine();
+
+            Usuario gestor = new Usuario();
+            List<Usuario> listaActual = gestor.leerUsuarios();
+
+            int Id = 1;
+            if (!listaActual.isEmpty()) {
+                Id = listaActual.get(listaActual.size() - 1).getId() + 1;
+            }
+
+            Usuario nuevoLector = new Usuario(Id, nombre, apellido, telefono);
+            gestor.crearUsuario(nuevoLector);
+
+            System.out.println("Lector registrado correctamente.");
+            System.out.println("Se le asigno el ID: " + Id + "\n");
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error de validación: " + e.getMessage() + "\n");
+        } catch (Exception e) {
+            System.out.println("Error al guardar el lector: " + e.getMessage() + "\n");
+        }
+    }
+
+    static void listarLectores() {
+        try {
+            System.out.println("\n--- Lista de Lectores ---");
+
+            Usuario gestor = new Usuario();
+            List<Usuario> lectores = gestor.leerUsuarios();
+
+            if (lectores.isEmpty()) {
+                System.out.println("No hay lectores registrados en el sistema.\n");
+                return;
+            }
+
+            for (Usuario lector : lectores) {
+                System.out.println("ID: " + lector.getId() +
+                        " Nombre: " + lector.getName() + " " + lector.getLastname() +
+                        " Teléfono: " + lector.getphone());
+            }
+            System.out.println();
+
+        } catch (Exception e) {
+            System.out.println("Error al leer la lista de lectores: " + e.getMessage() + "\n");
+        }
 
     }
-    static void listarLectores() { 
+
+    static void eliminarLector() {
 
     }
-    static void eliminarLector() { 
+
+    static void registrarPrestamo() {
 
     }
-    static void registrarPrestamo() { 
 
-    }
-    static void listarPrestamos() { 
-        
+    static void listarPrestamos() {
+
     }
 }

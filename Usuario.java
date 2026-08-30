@@ -10,12 +10,12 @@ class Usuario {
     private int id;
     private String name;
     private String lastname;
-    public int phone;
+    public String phone;
 
     public Usuario() {
     }
 
-    public Usuario(int id, String name, String lastname,int phone) {
+    public Usuario(int id, String name, String lastname, String phone) {
         this.id = id;
         this.name = name;
         this.lastname = lastname;
@@ -46,36 +46,51 @@ class Usuario {
     }
 
     public void setLastname(String lastname) {
+        if (!Character.isUpperCase(name.charAt(0)))
+            throw new IllegalArgumentException("Debe digitar el apellido con la primera letra mayuscula.");
         this.lastname = lastname;
     }
 
-    public int getphone() {
+    public String getphone() {
         return phone;
     }
-    public void setphone(int phone){
-        this.phone= phone;
+
+    public void setphone(String phone) {
+        this.phone = phone;
     }
 
     public void crearUsuario(Usuario usuario)
             throws IOException {
-        FileWriter fw = new FileWriter("usuarios.csv", true);
+        FileWriter fw = new FileWriter("lectores.csv", true);
         BufferedWriter bw = new BufferedWriter(fw);
         bw.write(usuario.toString());
         bw.newLine();
         bw.close();
     }
 
-    public List<Usuario> leerUsuarios()
-            throws IOException {
+    public List<Usuario> leerUsuarios() throws IOException {
         List<Usuario> lista = new ArrayList<>();
-        Scanner sc = new Scanner(new File("usuarios.csv"));
+        File archivo = new File("lectores.csv");
+
+        if (!archivo.exists()) {
+            return lista;
+        }
+
+        Scanner sc = new Scanner(archivo);
+        if (sc.hasNextLine()) {
+            sc.nextLine();
+        }
 
         while (sc.hasNextLine()) {
-            String[] datos = sc.nextLine().split(",");
-            lista.add(new Usuario(
-                    Integer.parseInt(datos[0]),
-                    datos[1],
-                    datos[2]));
+            String linea = sc.nextLine().trim();
+            if (!linea.isEmpty()) {
+                String[] datos = linea.split(",");
+                lista.add(new Usuario(
+                        Integer.parseInt(datos[0]),
+                        datos[1],
+                        datos[2],
+                        datos[3]));
+            }
         }
         sc.close();
         return lista;
@@ -99,7 +114,7 @@ class Usuario {
         bw.close();
     }
 
-    public  void eliminarUsuario(int id)
+    public void eliminarUsuario(int id)
             throws IOException {
 
         List<Usuario> lista = this.leerUsuarios();
@@ -116,6 +131,6 @@ class Usuario {
 
     @Override
     public String toString() {
-        return String.valueOf(this.id) + ',' + this.name + ',' + this.lastname;
+        return this.id + "," + this.name + "," + this.lastname + "," + this.phone + "\n";
     }
 }
