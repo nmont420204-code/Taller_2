@@ -1,5 +1,6 @@
-import java.util.Scanner;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 public class Main {
 
     static Scanner leer = new Scanner(System.in);
@@ -120,14 +121,141 @@ public class Main {
     }
 
     static void eliminarLector() {
+        try {
+            System.out.println("\n--- Eliminar Lector ---");
+            int idEliminar = leerEntero("Ingrese el ID del lector a eliminar: ");
 
+            Usuario gestorUsuario = new Usuario();
+            List<Usuario> lectores = gestorUsuario.leerUsuarios();
+
+            // 1. Verificar si el lector existe
+            boolean existeLector = false;
+            for (Usuario u : lectores) {
+                if (u.getId() == idEliminar) {
+                    existeLector = true;
+                    break;
+                }
+            }
+
+            if (!existeLector) {
+                System.out.println("Error: El lector con ID " + idEliminar + " no existe.\n");
+                return;
+            }
+
+            // 2. Verificar si tiene préstamos asociados
+            Prestamo gestorPrestamo = new Prestamo();
+            if (gestorPrestamo.tienePrestamosAsociados(idEliminar)) {
+                System.out.println("Error: El lector tiene préstamos asociados y no puede ser eliminado.\n");
+                return;
+            }
+
+            // 3. Eliminar físicamente y actualizar índices
+            gestorUsuario.eliminarUsuario(idEliminar);
+            System.out.println("Lector eliminado físicamente y archivo de índices actualizado.\n");
+
+        } catch (Exception e) {
+            System.out.println("Error al eliminar el lector: " + e.getMessage() + "\n");
+        }
     }
 
     static void registrarPrestamo() {
+        try {
+            System.out.println("\n--- Registrar Préstamo ---");
+            int idLector = leerEntero("Ingrese el ID del lector: ");
 
+            Usuario gestorUsuario = new Usuario();
+            List<Usuario> lectores = gestorUsuario.leerUsuarios();
+
+            // Validar si el lector existe
+            boolean existeLector = false;
+            for (Usuario u : lectores) {
+                if (u.getId() == idLector) {
+                    existeLector = true;
+                    break;
+                }
+            }
+
+            if (!existeLector) {
+                System.out.println("Error: No se puede registrar el préstamo. El lector con ID " + idLector + " no existe.\n");
+                return;
+            }
+
+            System.out.print("Ingrese el nombre del libro: ");
+            String libro = leer.nextLine();
+
+            System.out.print("Ingrese la fecha del préstamo (YYYY-MM-DD): ");
+            String fechaP = leer.nextLine();
+
+            System.out.print("Ingrese la fecha de devolución (opcional, presione Enter para omitir): ");
+            String fechaD = leer.nextLine();
+
+            // Autoincrementar ID de préstamo
+            Prestamo gestorPrestamo = new Prestamo();
+            List<Prestamo> listaPrestamos = gestorPrestamo.leerPrestamos();
+            int idPrestamo = 1;
+            if (!listaPrestamos.isEmpty()) {
+                idPrestamo = listaPrestamos.get(listaPrestamos.size() - 1).getIdPrestamo() + 1;
+            }
+
+            Prestamo nuevoPrestamo = new Prestamo(idPrestamo, idLector, libro, fechaP, fechaD);
+            gestorPrestamo.crearPrestamo(nuevoPrestamo);
+
+            System.out.println("Préstamo registrado exitosamente con ID: " + idPrestamo + "\n");
+
+        } catch (Exception e) {
+            System.out.println("Error al registrar el préstamo: " + e.getMessage() + "\n");
+        }
     }
 
     static void listarPrestamos() {
+        try {
+            System.out.println("\n--- Consultar Préstamos de Lector ---");
+            int idLector = leerEntero("Ingrese el ID del lector: ");
 
+            // Validar si el lector existe
+            Usuario gestorUsuario = new Usuario();
+            List<Usuario> lectores = gestorUsuario.leerUsuarios();
+            boolean existeLector = false;
+
+            for (Usuario u : lectores) {
+                if (u.getId() == idLector) {
+                    existeLector = true;
+                    break;
+                }
+            }
+
+            if (!existeLector) {
+                System.out.println("Error: El lector con ID " + idLector + " no existe.\n");
+                return;
+            }
+
+            // Consultar préstamos
+            Prestamo gestorPrestamo = new Prestamo();
+            List<Prestamo> todos = gestorPrestamo.leerPrestamos();
+            List<Prestamo> delLector = new ArrayList<>();
+
+            for (Prestamo p : todos) {
+                if (p.getIdLector() == idLector) {
+                    delLector.add(p);
+                }
+            }
+
+            if (delLector.isEmpty()) {
+                System.out.println("El lector existe pero no tiene préstamos registrados.\n");
+                return;
+            }
+
+            System.out.println("Préstamos asociados al lector " + idLector + ":");
+            for (Prestamo p : delLector) {
+                System.out.println("ID Préstamo: " + p.getIdPrestamo() +
+                        " | Libro: " + p.getNombreLibro() +
+                        " | Fecha Préstamo: " + p.getFechaPrestamo() +
+                        " | Devolución: " + (p.getFechaDevolucion().isEmpty() ? "Sin devolver" : p.getFechaDevolucion()));
+            }
+            System.out.println();
+
+        } catch (Exception e) {
+            System.out.println("Error al listar préstamos: " + e.getMessage() + "\n");
+        }
     }
 }
