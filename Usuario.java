@@ -31,7 +31,6 @@ class Usuario {
     }
 
     public String getName() {
-
         return name;
     }
 
@@ -46,7 +45,7 @@ class Usuario {
     }
 
     public void setLastname(String lastname) {
-        if (!Character.isUpperCase(name.charAt(0)))
+        if (!Character.isUpperCase(lastname.charAt(0)))
             throw new IllegalArgumentException("Debe digitar el apellido con la primera letra mayuscula.");
         this.lastname = lastname;
     }
@@ -59,13 +58,29 @@ class Usuario {
         this.phone = phone;
     }
 
-    public void crearUsuario(Usuario usuario)
-            throws IOException {
-        FileWriter fw = new FileWriter("lectores.csv", true);
-        BufferedWriter bw = new BufferedWriter(fw);
-        bw.write(usuario.toString());
-        bw.newLine();
-        bw.close();
+    public void crearUsuario(Usuario usuario) throws IOException {
+        File archivo = new File("lectores.csv");
+        boolean esNuevo = !archivo.exists() || archivo.length() == 0;
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo, true))) {
+            // Escribir cabecera si el archivo está vacío o no existe
+            if (esNuevo) {
+                bw.write("id_lector,nombre,apellido,telefono");
+                bw.newLine();
+            }
+
+            // Escribir los datos formateados en CSV
+            String linea = usuario.getId() + "," + 
+                           usuario.getName() + "," + 
+                           usuario.getLastname() + "," + 
+                           usuario.getphone();
+                           
+            bw.write(linea);
+            bw.newLine();
+        }
+
+        // Actualizar el índice al crear
+        actualizarIndiceLectores();
     }
 
     public List<Usuario> leerUsuarios() throws IOException {
@@ -76,61 +91,90 @@ class Usuario {
             return lista;
         }
 
-        Scanner sc = new Scanner(archivo);
-        if (sc.hasNextLine()) {
-            sc.nextLine();
-        }
+        try (Scanner sc = new Scanner(archivo)) {
+            if (sc.hasNextLine()) {
+                sc.nextLine(); // Ignorar la cabecera
+            }
 
-        while (sc.hasNextLine()) {
-            String linea = sc.nextLine().trim();
-            if (!linea.isEmpty()) {
-                String[] datos = linea.split(",");
-                lista.add(new Usuario(
-                        Integer.parseInt(datos[0]),
-                        datos[1],
-                        datos[2],
-                        datos[3]));
+            while (sc.hasNextLine()) {
+                String linea = sc.nextLine().trim();
+                if (!linea.isEmpty()) {
+                    String[] datos = linea.split(",");
+                    if (datos.length >= 4) {
+                        lista.add(new Usuario(
+                                Integer.parseInt(datos[0].trim()),
+                                datos[1].trim(),
+                                datos[2].trim(),
+                                datos[3].trim()));
+                    }
+                }
             }
         }
-        sc.close();
         return lista;
     }
 
-    public void actualizarUsuario(int id,
-            String nuevoNombre, String nuevoLastname)
-            throws IOException {
-
+    public void actualizarUsuario(int id, String nuevoNombre, String nuevoLastname) throws IOException {
         List<Usuario> lista = this.leerUsuarios();
-        BufferedWriter bw = new BufferedWriter(new FileWriter("usuarios.csv"));
 
-        for (Usuario u : lista) {
-            if (u.getId() == id) {
-                u.setName(nuevoNombre);
-                u.setLastname(nuevoLastname);
-            }
-            bw.write(u.toString());
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("lectores.csv", false))) {
+            bw.write("id_lector,nombre,apellido,telefono");
             bw.newLine();
-        }
-        bw.close();
-    }
 
-    public void eliminarUsuario(int id)
-            throws IOException {
-
-        List<Usuario> lista = this.leerUsuarios();
-        BufferedWriter bw = new BufferedWriter(new FileWriter("usuarios.txt"));
-
-        for (Usuario u : lista) {
-            if (u.getId() != id) {
-                bw.write(u.toString());
+            for (Usuario u : lista) {
+                if (u.getId() == id) {
+                    u.setName(nuevoNombre);
+                    u.setLastname(nuevoLastname);
+                }
+                bw.write(u.getId() + "," + u.getName() + "," + u.getLastname() + "," + u.getphone());
                 bw.newLine();
             }
         }
-        bw.close();
+        actualizarIndiceLectores();
+    }
+
+    public void eliminarUsuario(int id) throws IOException {
+        List<Usuario> lista = this.leerUsuarios();
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("lectores.csv", false))) {
+            bw.write("id_lector,nombre,apellido,telefono");
+            bw.newLine();
+
+            for (Usuario u : lista) {
+                if (u.getId() != id) {
+                    bw.write(u.getId() + "," + u.getName() + "," + u.getLastname() + "," + u.getphone());
+                    bw.newLine();
+                }
+            }
+        }
+
+        actualizarIndiceLectores();
+    }
+
+    private void actualizarIndiceLectores() throws IOException {
+        File archivoCsv = new File("lectores.csv");
+        if (!archivoCsv.exists()) return;
+
+        try (java.io.RandomAccessFile raf = new java.io.RandomAccessFile(archivoCsv, "r");
+             BufferedWriter bwIdx = new BufferedWriter(new FileWriter("lectores.idx", false))) {
+
+            String linea = raf.readLine(); // Descartar cabecera
+            long posicionByte;
+
+            while ((linea = raf.readLine()) != null) {
+                if (linea.trim().isEmpty()) continue;
+                posicionByte = raf.getFilePointer() - (linea.getBytes().length + System.lineSeparator().getBytes().length);
+                String[] datos = linea.split(",");
+                if (datos.length > 0) {
+                    int idLector = Integer.parseInt(datos[0].trim());
+                    bwIdx.write(idLector + "," + posicionByte);
+                    bwIdx.newLine();
+                }
+            }
+        }
     }
 
     @Override
     public String toString() {
-        return this.id + "," + this.name + "," + this.lastname + "," + this.phone + "\n";
+        return id + "," + name + "," + lastname + "," + phone;
     }
 }
