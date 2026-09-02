@@ -7,9 +7,10 @@ public class Main {
     static Scanner leer = new Scanner(System.in);
 
     public static void main(String[] args) {
+        int opcion=1;
         try {
             do {
-                mostrarMenu();
+                opcion=mostrarMenu();
                 switch (opcion) {
                     case 1:
                         registrarLector();
@@ -37,7 +38,7 @@ public class Main {
                     default:
                         System.out.println("Opción inválida, intente nuevamente.\n");
                 }
-            } while (opcion != 6);
+            } while (opcion != 8);
 
         } catch (Exception e) {
             System.out.println("Ocurrió un error inesperado: " + e.getMessage());
@@ -57,66 +58,66 @@ public class Main {
 
     }
     static void prestamosVencidos(){
-        
+
     }
     static void mostrarConsultas() {
-        System.out.println("---- Consultas ----");
-        System.out.println("1. Historial completo de un lector");
-        System.out.println("2. Lectores con mayor cantidad de préstamos");
-        System.out.println("3. Libros actualmente prestados");
-        System.out.println("4. Generar reporte de lectores con préstamos activos");
-        System.out.println("5. Generar reporte de préstamos vencidos");
-        System.out.println("6. Volver al menú principal");
-
+        int opcion_consultas = 0; // Se declara fuera del do para usarla en el while
         try {
             do {
-                int opcion_consultas = leerEntero("Seleccione una opcion: ");
+                System.out.println("---- Consultas ----");
+                System.out.println("1. Historial completo de un lector");
+                System.out.println("2. Lectores con mayor cantidad de préstamos");
+                System.out.println("3. Libros actualmente prestados");
+                System.out.println("4. Generar reporte de lectores con préstamos activos");
+                System.out.println("5. Generar reporte de préstamos vencidos");
+                System.out.println("6. Volver al menú principal");
 
-                switch (opcion) {
+                opcion_consultas = leerEntero("Seleccione una opcion: ");
+
+                switch (opcion_consultas) {
                     case 1:
-                        registrarLector();
+                        historialLector(); // Llamada a los métodos correctos
                         break;
                     case 2:
-                        listarLectores();
+                        mayorCantidad();
                         break;
                     case 3:
-                        eliminarLector();
+                        librosPrestados();
                         break;
                     case 4:
-                        registrarPrestamo();
+                        prestamosActivos();
                         break;
                     case 5:
-                        listarPrestamos();
+                        prestamosVencidos();
                         break;
                     case 6:
-                        mostrarMenu();
+                        System.out.println("Regresando al menú principal...\n");
+                        break;
                     default:
                         System.out.println("Opción inválida, intente nuevamente.\n");
                 }
-            } while (opcion != 6);
+            } while (opcion_consultas != 6);
 
         } catch (Exception e) {
-            System.out.println("Ocurrió un error inesperado: " + e.getMessage());
+            System.out.println("Ocurrió un error inesperado en consultas: " + e.getMessage());
         }
     }
 
+    static void devolucionLibros(){
+
     }
 
-    static void mostrarMenu() {
-        System.out.println("Gestion Biblioteca");
-        System.out.println("1. Registrar nuevo lector");
-        System.out.println("2. Mostrar todos los lectores");
+    static int mostrarMenu() {
+        System.out.println("\n---- Menú Principal ----");
+        System.out.println("1. Registrar lector");
+        System.out.println("2. Listar lectores");
         System.out.println("3. Eliminar lector");
         System.out.println("4. Registrar préstamo");
         System.out.println("5. Listar préstamos");
-        System.out.println("6. Salir");
-        int opcion = leerEntero("Seleccione una opcion: ");
-    }
-
-    static void devolucionLibros();
-
-    {
-
+        System.out.println("6. Consultas");
+        System.out.println("7. Devolución de libros");
+        System.out.println("8. Salir");
+        return leerEntero("Seleccione una opción: ");
     }
 
     static int leerEntero(String msg) {
