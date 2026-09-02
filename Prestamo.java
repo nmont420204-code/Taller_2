@@ -13,24 +13,21 @@ public class Prestamo {
     private int idLector;
     private String nombreLibro;
     private String fechaPrestamo;
-    private String fechaDevolucion;
 
     public Prestamo() {
     }
 
-    public Prestamo(int idPrestamo, int idLector, String nombreLibro, String fechaPrestamo, String fechaDevolucion) {
+    public Prestamo(int idPrestamo, int idLector, String nombreLibro, String fechaPrestamo) {
         this.idPrestamo = idPrestamo;
         this.idLector = idLector;
         this.nombreLibro = nombreLibro;
         this.fechaPrestamo = fechaPrestamo;
-        this.fechaDevolucion = fechaDevolucion;
     }
 
     public int getIdPrestamo() { return idPrestamo; }
     public int getIdLector() { return idLector; }
     public String getNombreLibro() { return nombreLibro; }
     public String getFechaPrestamo() { return fechaPrestamo; }
-    public String getFechaDevolucion() { return fechaDevolucion; }
 
     public void crearPrestamo(Prestamo p) throws IOException {
         File archivo = new File("prestamos.csv");
@@ -38,10 +35,10 @@ public class Prestamo {
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("prestamos.csv", true))) {
             if (!existe) {
-                bw.write("id_prestamo,id_lector,libro,fecha_prestamo,fecha_devolucion");
+                bw.write("id_prestamo,id_lector,libro,fecha_prestamo");
                 bw.newLine();
             }
-            bw.write(p.getIdPrestamo() + "," + p.getIdLector() + "," + p.getNombreLibro() + "," + p.getFechaPrestamo() + "," + p.getFechaDevolucion());
+            bw.write(p.getIdPrestamo() + "," + p.getIdLector() + "," + p.getNombreLibro() + "," + p.getFechaPrestamo()); 
             bw.newLine();
         }
         actualizarIndicePrestamos();
@@ -65,8 +62,7 @@ public class Prestamo {
                     int idL = Integer.parseInt(datos[1].trim());
                     String libro = datos[2].trim();
                     String fechaP = datos[3].trim();
-                    String fechaD = (datos.length > 4) ? datos[4].trim() : "";
-                    lista.add(new Prestamo(idP, idL, libro, fechaP, fechaD));
+                    lista.add(new Prestamo(idP, idL, libro, fechaP));
                 }
             }
         }

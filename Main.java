@@ -226,7 +226,6 @@ public class Main {
             System.out.println("Error al eliminar el lector: " + e.getMessage() + "\n");
         }
     }
-
     static void registrarPrestamo() {
         try {
             System.out.println("\n--- Registrar Préstamo ---");
@@ -245,8 +244,7 @@ public class Main {
             }
 
             if (!existeLector) {
-                System.out.println(
-                        "Error: No se puede registrar el préstamo. El lector con ID " + idLector + " no existe.\n");
+                System.out.println("Error: No se puede registrar el préstamo. El lector con ID " + idLector + " no existe.\n");
                 return;
             }
 
@@ -256,9 +254,6 @@ public class Main {
             System.out.print("Ingrese la fecha del préstamo (YYYY-MM-DD): ");
             String fechaP = leer.nextLine();
 
-            System.out.print("Ingrese la fecha de devolución (opcional, presione Enter para omitir): ");
-            String fechaD = leer.nextLine();
-
             // Autoincrementar ID de préstamo
             Prestamo gestorPrestamo = new Prestamo();
             List<Prestamo> listaPrestamos = gestorPrestamo.leerPrestamos();
@@ -267,7 +262,7 @@ public class Main {
                 idPrestamo = listaPrestamos.get(listaPrestamos.size() - 1).getIdPrestamo() + 1;
             }
 
-            Prestamo nuevoPrestamo = new Prestamo(idPrestamo, idLector, libro, fechaP, fechaD);
+            Prestamo nuevoPrestamo = new Prestamo(idPrestamo, idLector, libro, fechaP );
             gestorPrestamo.crearPrestamo(nuevoPrestamo);
 
             System.out.println("Préstamo registrado exitosamente con ID: " + idPrestamo + "\n");
@@ -319,9 +314,7 @@ public class Main {
             for (Prestamo p : delLector) {
                 System.out.println("ID Préstamo: " + p.getIdPrestamo() +
                         " | Libro: " + p.getNombreLibro() +
-                        " | Fecha Préstamo: " + p.getFechaPrestamo() +
-                        " | Devolución: "
-                        + (p.getFechaDevolucion().isEmpty() ? "Sin devolver" : p.getFechaDevolucion()));
+                        " | Fecha Préstamo: " + p.getFechaPrestamo());
             }
             System.out.println();
 
