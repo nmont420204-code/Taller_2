@@ -1,16 +1,76 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
 public class Main {
 
     static Scanner leer = new Scanner(System.in);
 
     public static void main(String[] args) {
         try {
-            int opcion;
             do {
                 mostrarMenu();
-                opcion = leerEntero("Seleccione una opcion: ");
+                switch (opcion) {
+                    case 1:
+                        registrarLector();
+                        break;
+                    case 2:
+                        listarLectores();
+                        break;
+                    case 3:
+                        eliminarLector();
+                        break;
+                    case 4:
+                        registrarPrestamo();
+                        break;
+                    case 5:
+                        listarPrestamos();
+                        break;
+                    case 6:
+                        mostrarConsultas();
+                        break;
+                    case 7:
+                        devolucionLibros();
+                    case 8:
+                        System.out.println("Cerrando el programa...");
+                        break;
+                    default:
+                        System.out.println("Opción inválida, intente nuevamente.\n");
+                }
+            } while (opcion != 6);
+
+        } catch (Exception e) {
+            System.out.println("Ocurrió un error inesperado: " + e.getMessage());
+        }
+    }
+
+    static void historialLector(){
+
+    }
+    static void mayorCantidad(){
+
+    }
+    static void librosPrestados(){
+
+    }
+    static void prestamosActivos(){
+
+    }
+    static void prestamosVencidos(){
+        
+    }
+    static void mostrarConsultas() {
+        System.out.println("---- Consultas ----");
+        System.out.println("1. Historial completo de un lector");
+        System.out.println("2. Lectores con mayor cantidad de préstamos");
+        System.out.println("3. Libros actualmente prestados");
+        System.out.println("4. Generar reporte de lectores con préstamos activos");
+        System.out.println("5. Generar reporte de préstamos vencidos");
+        System.out.println("6. Volver al menú principal");
+
+        try {
+            do {
+                int opcion_consultas = leerEntero("Seleccione una opcion: ");
 
                 switch (opcion) {
                     case 1:
@@ -29,8 +89,7 @@ public class Main {
                         listarPrestamos();
                         break;
                     case 6:
-                        System.out.println("Cerrando el programa...");
-                        break;
+                        mostrarMenu();
                     default:
                         System.out.println("Opción inválida, intente nuevamente.\n");
                 }
@@ -41,6 +100,8 @@ public class Main {
         }
     }
 
+    }
+
     static void mostrarMenu() {
         System.out.println("Gestion Biblioteca");
         System.out.println("1. Registrar nuevo lector");
@@ -49,6 +110,13 @@ public class Main {
         System.out.println("4. Registrar préstamo");
         System.out.println("5. Listar préstamos");
         System.out.println("6. Salir");
+        int opcion = leerEntero("Seleccione una opcion: ");
+    }
+
+    static void devolucionLibros();
+
+    {
+
     }
 
     static int leerEntero(String msg) {
@@ -176,7 +244,8 @@ public class Main {
             }
 
             if (!existeLector) {
-                System.out.println("Error: No se puede registrar el préstamo. El lector con ID " + idLector + " no existe.\n");
+                System.out.println(
+                        "Error: No se puede registrar el préstamo. El lector con ID " + idLector + " no existe.\n");
                 return;
             }
 
@@ -250,7 +319,8 @@ public class Main {
                 System.out.println("ID Préstamo: " + p.getIdPrestamo() +
                         " | Libro: " + p.getNombreLibro() +
                         " | Fecha Préstamo: " + p.getFechaPrestamo() +
-                        " | Devolución: " + (p.getFechaDevolucion().isEmpty() ? "Sin devolver" : p.getFechaDevolucion()));
+                        " | Devolución: "
+                        + (p.getFechaDevolucion().isEmpty() ? "Sin devolver" : p.getFechaDevolucion()));
             }
             System.out.println();
 
